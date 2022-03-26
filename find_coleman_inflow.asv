@@ -1,0 +1,33 @@
+function[coleman_data] = find_coleman_inflow(r, psi, v_inf, v_tip, alpha)
+%% constants
+X(1) = 0;
+epsilon_cole = 1;
+
+%% defining functions
+kx_fn = @(X) tan(X/2);
+lambda_io = @(lambda_i_TPP_UH60_FF) lambda_i_TPP_UH60_FF;
+lambda_i_cole_fn = @(lambda_io, kx) lambda_io*(1+(kx*r*cos(psi))); %%% CHECK EQUATION
+mu_z_fn = @(v_inf) v_inf*sin(alpha)/v_tip;
+mu_x_fn = @(v_inf) v_inf*cos(alpha)/v_tip;
+X = @(lambda_i_cole_fn, mu_x_fn, mu_z_fn)
+
+%% Coleman Model
+Coleman_data = zeros(360, 100, 223);
+for m = 1:1:223
+    for p = 1:361
+        for rr = 1:100
+            while epsilon_cole > 0.004
+                    lambda_i_cole_old = lambda_i_cole;
+                    kx = kx_fn(X);
+                    lambda_i_cole = lambda_i_cole_fn(lambda_io, kx);
+                    mu_z = mu_z_fn(v_inf);
+                    mu_x = mu_x_fn(v_inf);
+                    X(n+1) = atan(mu_x(m)/(lambda_i_cole(rr, p, m)-mu_z(m)));
+                    epsilon_cole = abs(lambda_i_cole - lambda_i_cole_old);
+            end
+        end
+    end
+end
+Coleman_data(rr, p, 1) = lambda_i_cole;
+
+end
