@@ -4,70 +4,39 @@ clear
 %% UH 60
 %Constants
 % Airfoil SC1095 & SC1094R8
-Nb = 4;
-N_psi = 360;
-R_i = 26.85;                                                           %ft
-a = 2*pi;                                                              %1/rad
-omega_i = 258;                                                              %rpm
-A_i = 2261.5;                                                          %ft^2
-A_blade_i = 186.8;                                                     %ft^2
-cd0 = 0.01;
-f_i = 35.04;                                                           %ft
-T_i = 20000;                                                           %lbs
-c_i = 20.76;                                                           %in
-rho = 1.225;                                                           %kg/m^3
-k = 1.15;
-L_tr = 45;  %% FIX LATER
-x_cg = 0;
-y_cg = 0;
-h = 5;  %% FIX LATER
-vb = 1;
-lock = 8;
-theta_tw = 0;
+[Nb, N_psi, R_i, a, omega_i,A_i,A_blade_i,cd0,f_i,T_i,c_i,rho,k,...
+    L_tr,x_cg,y_cg,h,vb, lock, theta_tw] = find_constants;
+[R,A,A_blade,f,v_inf_mph,v_inf,c,sigma,omega,v_tip,alpha_d,alpha,...
+    mu,T,CT_constant_T,lambda_hover,psi,e,r,Cl_alpha,nu,dr,...
+    linear_inflow_power,MS_inflow_power,w] = find_general_inflow(Nb, R_i,...
+    a, omega_i,A_i,A_blade_i,f_i,T_i,c_i,rho);
 
-%General
-R = R_i*0.3048;
-A = A_i*0.092903;
-A_blade = A_blade_i*0.092903;
-f = f_i*0.092903;
-v_inf_mph = 0:1:222;
-v_inf = v_inf_mph*0.44704;
-c = c_i*0.0254;
-sigma = (Nb*c)/(pi*R);
-omega = (omega_i/60)*2*pi;
-v_tip = omega*R;
-alpha_d = -2;                                                          %degrees
-alpha = -2*pi/180 * ones(1, 223);                                      %radians
-mu = v_inf.*cos(alpha)/(omega*R);                                      % small angle approximation
-T = T_i*4.4482216153;
-CT_constant_T = (T/(rho*A*v_tip^2)) * ones(1, 223);
-lambda_hover = sqrt(CT_constant_T/2);
-psi = (0:1:360)*pi/180;
-e = 0.17;
-r = linspace(e, 1, 100);
-Cl_alpha = a;
-nu = sqrt(1-r.^2);
-dr = (1-(e))/99;
-linear_inflow_power = 0.01;
-MS_inflow_power = 0.01;
-w = 0.3;
+%% Assignment 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Inflow Functions
-[lambda_TPP_UH60_FF,lambda_i_TPP_UH60_FF,lambda_output] = find_linear_inflow(mu, alpha, CT_constant_T);
-[trim_inflow, CH_TPP_UH60_FF, CY_TPP_UH60_FF, beta, beta_dot, beta_star, theta, theta_dot, theta_star] = find_trim_inflow(mu, psi, CT_constant_T, sigma, f, A,L_tr, R, vb, linear_inflow_power, theta_tw,lambda_TPP_UH60_FF, omega, x_cg, y_cg, h, T, lock, a, cd0);
-%[coleman_data] = find_coleman_inflow(r, psi, v_inf, v_tip, alpha);
+[lambda_TPP_UH60_FF,lambda_i_TPP_UH60_FF,lambda_output]...
+    = find_linear_inflow(mu, alpha, CT_constant_T);
+[trim_inflow, CH_TPP_UH60_FF, CY_TPP_UH60_FF, beta, beta_dot,...
+    beta_star, theta, theta_dot, theta_star]...
+    = find_trim_inflow(mu, psi, CT_constant_T, sigma, f, A,L_tr, R, vb,...
+    linear_inflow_power, theta_tw,lambda_TPP_UH60_FF, omega, x_cg, y_cg,...
+    h, T, lock, a, cd0);
+
 [cn_1] = find_MS_1_inflow(mu(174), psi, nu, alpha, CT_constant_T);
 [cn_3] = find_MS_3_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-[w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu, CT_constant_T, mu(174));
-[u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar, Q_MS_bar,P_linear_bar, P_MS_bar] = ...
-    find_bemt(r, psi, mu(174), beta(:,174), beta_star(:,174),v_inf, lambda_TPP_UH60_FF(174),...
-    Cl_alpha,lambda_MS_total, theta(:,174), rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
+[w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu,...
+    CT_constant_T, mu(174));
+[u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,...
+    Q_MS_bar,P_linear_bar, P_MS_bar] = ...
+    find_bemt(r, psi, mu(174), beta(:,174), beta_star(:,174),v_inf, ...
+    lambda_TPP_UH60_FF(174),Cl_alpha,lambda_MS_total, theta(:,174),...
+    rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
 
 epsilon_t_linear_it = 1;
 epsilon_p_linear_it = 1;
 while (epsilon_t_linear_it > 0.004) && (epsilon_p_linear_it > 0.004)
     T = T_linear_bar;
     linear_inflow_power = P_linear_bar;
-    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223); %%%% FROM SCALAR TO VECTOR?????
+    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223); 
     [lambda_TPP_linear_it,lambda_i_linear_it,lambda_output_linear_it] ...
         = find_linear_inflow(mu, alpha, CT_constant_T);
     [trim_inflow_linear_it, CH_TPP_UH60_FF_linear_it,...
@@ -110,18 +79,18 @@ while (epsilon_t_MS_it > 0.004) && (epsilon_p_MS_it > 0.004)
         R, cd0, N_psi, dr, Nb, omega, v_tip);
     epsilon_t_MS_it = T_MS_bar - T;
     epsilon_p_MS_it = P_MS_bar - MS_inflow_power;
-    P_MS_bar = P_MS;
+    P_MS = P_MS_bar;
 end
 
 
+%% Assignment 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Wake model
 %% Constants
 %psi_w = wake age;
 %psi_b = blade azimuthal position
-del_psi = pi/12;
-del_psi2 = pi/6;
-psi_b = 0:del_psi:9*pi;
-psi_w = 0:del_psi2:9*pi;
+del_psi_w = pi/12;
+psi_b = psi;
+psi_w = 0:del_psi_w:3*pi;
 epsilon_wake = 1;
 
 %% Wake functions
@@ -133,39 +102,40 @@ circulation_v = constant_circulation;
 [xv, yv, zv, mu_z, mu_x, E, r_wake] = ...
     find_prescribed_wake(lambda_TPP_linear_it(174), mu(174), alpha(174),...
     v_tip, r(100), psi, psi_w, psi_b);
-figure(1)
-plot3(xv(12,:), yv(12,:), zv(12,:))
-xlabel("x")
-ylabel("y")
-zlabel("z")
-figure(2)
-plot(xv(12,:), yv(12,:))
-
-%[control_pt] = find_wessinger_l(c, xv, yv, zv, r_wake);
+x_rotor_c_4 = r'*cos(psi_b);
+y_rotor_c_4 = r'*sin(psi_b);
+x_rotor = x_rotor_c_4 - cos(psi_b).*sqrt(x_rotor_c_4.^2+((c/2)^2));
+y_rotor = y_rotor_c_4 - sin(psi_b).*sqrt(y_rotor_c_4.^2+((c/2)^2));
+z_rotor= zeros(size(x_rotor));
+r_rotor = cat(3, x_rotor, y_rotor, z_rotor);
+plot3(xv(:,12), yv(:,12), zv(:,12))
 [V, lambda_wake, r1, r2] = find_biot_savart(circulation_v,...
-    v_tip, r_wake, psi_w, psi_b);
+    v_tip, r_wake, psi_w, psi_b, r_rotor, r);
+lambda_MS_total = sqrt(lambda_wake(:,:,1).^2+lambda_wake(:,:,2).^2+lambda_wake(:,:,3).^2);
+for P_B = 1:length(psi_b)
 [u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,...
-    Q_MS_bar, P_linear_bar, P_MS_bar, dL_MS, alpha_linear,alpha_MS, dFx_MS, dFz_MS] = ...
-    find_bemt(r, psi, mu, beta, beta_star,v_inf, lambda_TPP_UH60_FF,...
-    Cl_alpha,lambda_MS_total, theta, rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip)
+        Q_MS_bar, P_linear_bar, P_MS_bar, dL_MS, alpha_linear,alpha_MS,...
+        dFx_MS, dFz_MS] = find_bemt(r, psi(P_B), mu(174), beta_MS_it(P_B,174), ...
+        beta_star_MS_it(P_B,174),v_inf, lambda_TPP_MS_it(174),...
+        Cl_alpha,lambda_MS_total(:,P_B), theta_MS_it(P_B,174), rho, c,...
+        R, cd0, N_psi, dr, Nb, omega, v_tip);
 epsilon = T_MS_bar - T_old_store;
 P_wake = P_MS_bar;
 end
+end
 
-disp("Thrust Linear")
-disp(T_linear_bar)
-disp("Thrust Mangler Squire")
-disp(T_MS_bar_linear_it)
-disp("Power Linear")
-disp(P_linear_bar)
-disp("Power Mangler Squire")
-disp(P_MS_bar_linear_it)
-hold on
+
+%% Display
+disp("Thrust Linear"); disp(T_linear_bar)
+disp("Thrust Mangler Squire"); disp(T_MS_bar_linear_it)
+disp("Power Linear"); disp(P_linear_bar)
+disp("Power Mangler Squire"); disp(P_MS_bar_linear_it)
+
+%% Plots
 figure (1)
 plot (mu, lambda_TPP_UH60_FF)
 title("Uniform inflow vs advance ratio")
-xlabel("advance ratio mu")
-ylabel("uniform inflow lambda")
+xlabel("advance ratio mu"); ylabel("uniform inflow lambda")
 figure (2)
 [r_grid psi_grid] = meshgrid(r,psi);
 surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), abs(lambda_MS_total));
@@ -175,27 +145,28 @@ legend("Mangler & Squire Total Inflow")
 figure(3)
 plot(psi, dFx_MS)
 title("Force in x vs azimuth at all r locations")
-xlabel("psi")
-ylabel("dFx_MS")
+xlabel("psi"); ylabel("dFx_MS")
 figure(4)
 plot(psi, dFz_MS)
 title("Force in z vs azimuth at all r locations")
-xlabel("psi")
-ylabel("dFz_MS")
+xlabel("psi"); ylabel("dFz_MS")
 figure(5)
 plot(r, dFx_MS')
 title("Force in x vs radial location at all azimuth locations")
-xlabel("r")
-ylabel("dFx_MS")
+xlabel("r"); ylabel("dFx_MS")
 figure(6)
 plot(r, dFz_MS')
 title("Force in z vs radial location at all azimuth locations")
-xlabel("r")
-ylabel("dFz_MS")
+xlabel("r"); ylabel("dFz_MS")
 figure(7)
 uniform_crt = ones(361, 100);
 surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), uniform_crt*lambda_TPP_UH60_FF(174))
-title("Uniform Inflow")
-zlabel("Uniform Inflow lambda")
+title("Uniform Inflow"); zlabel("Uniform Inflow lambda")
 figure(8)
 plot3(xv, yv, zv, 'o')
+figure(9)
+plot3(xv(:,12), yv(:,12), zv(:,12))
+title("Beddoes Wake Geometry"); xlabel("x"); ylabel("y"); zlabel("z")
+figure(10)
+plot(xv(:,12), zv(:,12))
+title("Beddoes Wake Geometry 2D x vs. z")
