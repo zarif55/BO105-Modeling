@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>main_inflow_script</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-02-14"><meta name="DC.source" content="main_inflow_script.m"><style type="text/css">
+      --><title>main_inflow_script</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-03-30"><meta name="DC.source" content="main_inflow_script.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -67,76 +67,41 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">UH 60</a></li><li><a href="#3">functions</a></li></ul></div><pre class="codeinput">clc
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">UH 60</a></li><li><a href="#3">Assignment 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#4">Inflow Functions</a></li><li><a href="#5">Display</a></li><li><a href="#6">Plots P1</a></li><li><a href="#7">Assignment 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</a></li><li><a href="#8">Wake model</a></li><li><a href="#9">Constants</a></li><li><a href="#10">Wake functions</a></li><li><a href="#11">Plot project 2</a></li></ul></div><pre class="codeinput">clc
 close
 clear
 </pre><h2 id="2">UH 60</h2><pre class="codeinput"><span class="comment">%Constants</span>
 <span class="comment">% Airfoil SC1095 &amp; SC1094R8</span>
-Nb = 4;
-N_psi = 360;
-R_i = 26.85;                                                           <span class="comment">%ft</span>
-a = 2*pi;                                                              <span class="comment">%1/rad</span>
-omega_i = 258;                                                              <span class="comment">%rpm</span>
-A_i = 2261.5;                                                          <span class="comment">%ft^2</span>
-A_blade_i = 186.8;                                                     <span class="comment">%ft^2</span>
-cd0 = 0.01;
-f_i = 35.04;                                                           <span class="comment">%ft</span>
-T_i = 20000;                                                           <span class="comment">%lbs</span>
-c_i = 20.76;                                                           <span class="comment">%in</span>
-rho = 1.225;                                                           <span class="comment">%kg/m^3</span>
-k = 1.15;
-L_tr = 45;  <span class="comment">%% FIX LATER</span>
-x_cg = 0;
-y_cg = 0;
-h = 5;  <span class="comment">%% FIX LATER</span>
-vb = 1;
-lock = 8;
-theta_tw = 0;
+[Nb, N_psi, R_i, a, omega_i,A_i,A_blade_i,cd0,f_i,T_i,c_i,rho,k,<span class="keyword">...</span>
+    L_tr,x_cg,y_cg,h,vb, lock, theta_tw] = find_constants;
+[R,A,A_blade,f,v_inf_mph,v_inf,c,sigma,omega,v_tip,alpha_d,alpha,<span class="keyword">...</span>
+    mu,T,CT_constant_T,lambda_hover,psi,e,r,Cl_alpha,nu,dr,<span class="keyword">...</span>
+    linear_inflow_power,MS_inflow_power,w] = find_general_inflow(Nb, R_i,<span class="keyword">...</span>
+    a, omega_i,A_i,A_blade_i,f_i,T_i,c_i,rho);
+</pre><h2 id="3">Assignment 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><h2 id="4">Inflow Functions</h2><pre class="codeinput">[lambda_TPP_UH60_FF,lambda_i_TPP_UH60_FF,lambda_output]<span class="keyword">...</span>
+    = find_linear_inflow(mu, alpha, CT_constant_T);
+[trim_inflow, CH_TPP_UH60_FF, CY_TPP_UH60_FF, beta, beta_dot,<span class="keyword">...</span>
+    beta_star, theta, theta_dot, theta_star]<span class="keyword">...</span>
+    = find_trim_inflow(mu, psi, CT_constant_T, sigma, f, A,L_tr, R, vb,<span class="keyword">...</span>
+    linear_inflow_power, theta_tw,lambda_TPP_UH60_FF, omega, x_cg, y_cg,<span class="keyword">...</span>
+    h, T, lock, a, cd0);
 
-<span class="comment">%General</span>
-R = R_i*0.3048;
-A = A_i*0.092903;
-A_blade = A_blade_i*0.092903;
-f = f_i*0.092903;
-v_inf_mph = 0:1:222;
-v_inf = v_inf_mph*0.44704;
-c = c_i*0.0254;
-sigma = (Nb*c)/(pi*R);
-omega = (omega_i/60)*2*pi;
-v_tip = omega*R;
-alpha_d = -2;                                                          <span class="comment">%degrees</span>
-alpha = -2*pi/180 * ones(1, 223);                                      <span class="comment">%radians</span>
-mu = v_inf.*cos(alpha)/(omega*R);                                      <span class="comment">% small angle approximation</span>
-T = T_i*4.4482216153;
-CT_constant_T = (T/(rho*A*v_tip^2)) * ones(1, 223);
-lambda_hover = sqrt(CT_constant_T/2);
-psi = (0:1:360)*pi/180;
-e = 0.17;
-r = linspace(e, 1, 100);
-Cl_alpha = a;
-nu = sqrt(1-r.^2);
-dr = (1-(e))/99;
-linear_inflow_power = 0.01;
-MS_inflow_power = 0.01;
-w = 0.3;
-</pre><h2 id="3">functions</h2><pre class="codeinput">[lambda_TPP_UH60_FF,lambda_i_TPP_UH60_FF,lambda_output] = find_linear_inflow(mu, alpha, CT_constant_T);
-[trim_inflow, CH_TPP_UH60_FF, CY_TPP_UH60_FF, beta, beta_dot, beta_star, theta, theta_dot, theta_star] = find_trim_inflow(mu, psi, CT_constant_T, sigma, f, A,L_tr, R, vb, linear_inflow_power, theta_tw,lambda_TPP_UH60_FF, omega, x_cg, y_cg, h, T, lock, a, cd0);
-<span class="comment">%[coleman_data] = find_coleman_inflow(r, psi, v_inf, v_tip, alpha);</span>
-<span class="comment">%[lambda_1_i_MS_max] = find_MS_1_inflow(mu(223), psi, nu, alpha, CT_constant_T);</span>
 [cn_1] = find_MS_1_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-<span class="comment">%[lambda_3_i_MS_max] = find_MS_3_inflow(mu(223), psi, nu, alpha, CT_constant_T);</span>
 [cn_3] = find_MS_3_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-[w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu, CT_constant_T, mu(174));
-[u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar, Q_MS_bar,P_linear_bar, P_MS_bar] = <span class="keyword">...</span>
-    find_bemt(r, psi, mu(174), beta(:,174), beta_star(:,174),v_inf, lambda_TPP_UH60_FF(174),<span class="keyword">...</span>
-    Cl_alpha,lambda_MS_total, theta(:,174), rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
+[w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu,<span class="keyword">...</span>
+    CT_constant_T, mu(174));
+[u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,<span class="keyword">...</span>
+    Q_MS_bar,P_linear_bar, P_MS_bar] = <span class="keyword">...</span>
+    find_bemt(r, psi, mu(174), beta(:,174), beta_star(:,174),v_inf, <span class="keyword">...</span>
+    lambda_TPP_UH60_FF(174),Cl_alpha,lambda_MS_total, theta(:,174),<span class="keyword">...</span>
+    rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
 
 epsilon_t_linear_it = 1;
 epsilon_p_linear_it = 1;
 <span class="keyword">while</span> (epsilon_t_linear_it &gt; 0.004) &amp;&amp; (epsilon_p_linear_it &gt; 0.004)
     T = T_linear_bar;
     linear_inflow_power = P_linear_bar;
-    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223); <span class="comment">%%%% FROM SCALAR TO VECTOR?????</span>
+    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223);
     [lambda_TPP_linear_it,lambda_i_linear_it,lambda_output_linear_it] <span class="keyword">...</span>
         = find_linear_inflow(mu, alpha, CT_constant_T);
     [trim_inflow_linear_it, CH_TPP_UH60_FF_linear_it,<span class="keyword">...</span>
@@ -151,7 +116,6 @@ epsilon_p_linear_it = 1;
         find_bemt(r, psi, mu(174), beta_linear_it(:,174), beta_star_linear_it(:,174),v_inf, <span class="keyword">...</span>
         lambda_TPP_linear_it(174),Cl_alpha,lambda_MS_total, theta(:,174),<span class="keyword">...</span>
         rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
-    <span class="comment">%alpha = alpha_linear;</span>
     epsilon_t_linear_it = abs(T_linear_bar - T);
     epsilon_p_linear_it = abs(P_linear_bar - linear_inflow_power);
 <span class="keyword">end</span>
@@ -161,7 +125,7 @@ epsilon_p_MS_it = 1;
 <span class="keyword">while</span> (epsilon_t_MS_it &gt; 0.004) &amp;&amp; (epsilon_p_MS_it &gt; 0.004)
     T = T_MS_bar;
     MS_inflow_power = P_MS_bar;
-    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223); <span class="comment">%%%% FROM SCALAR TO VECTOR?????</span>
+    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223);
     [lambda_TPP_MS_it,lambda_i_TPP_MS_it,lambda_output] = <span class="keyword">...</span>
         find_linear_inflow(mu, alpha, CT_constant_T);
     [trim_inflow_MS_it, CH_TPP_UH60_FF_MS_it, CY_TPP_UH60_FF_MS_it, beta_MS_it,<span class="keyword">...</span>
@@ -169,9 +133,7 @@ epsilon_p_MS_it = 1;
         theta_dot_MS_it, theta_star_MS_it] = find_trim_inflow(mu, psi, CT_constant_T, sigma,<span class="keyword">...</span>
         f, A,L_tr, R, vb, MS_inflow_power, theta_tw,lambda_TPP_MS_it, omega,<span class="keyword">...</span>
         x_cg, y_cg, h, T, lock, a, cd0);
-    <span class="comment">%[lambda_1_i_MS_max_it] = find_MS_1_inflow(mu(223), psi, nu, alpha, CT_constant_T);</span>
     [cn_1] = find_MS_1_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-    <span class="comment">%[lambda_3_i_MS_max_it] = find_MS_3_inflow(mu(223), psi, nu, alpha, CT_constant_T);</span>
     [cn_3] = find_MS_3_inflow(mu(174), psi, nu, alpha, CT_constant_T);
     [w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu, CT_constant_T, mu(174));
     [u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,<span class="keyword">...</span>
@@ -182,48 +144,12 @@ epsilon_p_MS_it = 1;
         R, cd0, N_psi, dr, Nb, omega, v_tip);
     epsilon_t_MS_it = T_MS_bar - T;
     epsilon_p_MS_it = P_MS_bar - MS_inflow_power;
-    <span class="comment">%alpha = alpha_MS;</span>
+    P_MS = P_MS_bar;
 <span class="keyword">end</span>
-disp(<span class="string">"Thrust Linear"</span>)
-disp(T_linear_bar)
-disp(<span class="string">"Thrust Mangler Squire"</span>)
-disp(T_MS_bar_linear_it)
-disp(<span class="string">"Power Linear"</span>)
-disp(P_linear_bar)
-disp(<span class="string">"Power Mangler Squire"</span>)
-disp(P_MS_bar_linear_it)
-hold <span class="string">on</span>
-figure (1)
-plot (mu, lambda_TPP_UH60_FF)
-figure (2)
-[r_grid psi_grid] = meshgrid(r,psi);
-surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), abs(lambda_MS_total));
-title(<span class="string">"Force in x vs azimuth at all r locations"</span>)
-zlabel(<span class="string">"Non uniform Inflow lambda"</span>)
-legend(<span class="string">"Mangler &amp; Squire Total Inflow"</span>)
-figure(3)
-plot(psi, dFx_MS)
-title(<span class="string">"Force in x vs azimuth at all r locations"</span>)
-xlabel(<span class="string">"psi"</span>)
-ylabel(<span class="string">"dFx_MS"</span>)
-figure(4)
-plot(psi, dFz_MS)
-title(<span class="string">"Force in z vs azimuth at all r locations"</span>)
-xlabel(<span class="string">"psi"</span>)
-ylabel(<span class="string">"dFz_MS"</span>)
-figure(5)
-plot(r, dFx_MS')
-title(<span class="string">"Force in x vs radial location at all azimuth locations"</span>)
-xlabel(<span class="string">"r"</span>)
-ylabel(<span class="string">"dFx_MS"</span>)
-figure(6)
-plot(r, dFz_MS')
-title(<span class="string">"Force in z vs radial location at all azimuth locations"</span>)
-xlabel(<span class="string">"r"</span>)
-ylabel(<span class="string">"dFz_MS"</span>)
-figure(7)
-uniform_crt = ones(361, 100);
-surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), uniform_crt*lambda_TPP_UH60_FF(174))
+</pre><h2 id="5">Display</h2><pre class="codeinput">disp(<span class="string">"Thrust Linear"</span>); disp(T_linear_bar)
+disp(<span class="string">"Thrust Mangler Squire"</span>); disp(T_MS_bar_linear_it)
+disp(<span class="string">"Power Linear"</span>); disp(P_linear_bar)
+disp(<span class="string">"Power Mangler Squire"</span>); disp(P_MS_bar_linear_it)
 </pre><pre class="codeoutput">Thrust Linear
   856.9096
 
@@ -236,11 +162,109 @@ Power Linear
 Power Mangler Squire
    7.0532e+04
 
+</pre><h2 id="6">Plots P1</h2><pre class="codeinput">figure (1)
+plot (mu, lambda_TPP_UH60_FF)
+title(<span class="string">"Uniform inflow vs advance ratio"</span>)
+xlabel(<span class="string">"advance ratio mu"</span>); ylabel(<span class="string">"uniform inflow lambda"</span>)
+figure (2)
+[r_grid, psi_grid] = meshgrid(r,psi);
+surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), abs(lambda_MS_total));
+title(<span class="string">"Non uniform Inflow"</span>)
+zlabel(<span class="string">"Non uniform Inflow lambda"</span>)
+legend(<span class="string">"Mangler &amp; Squire Total Inflow"</span>)
+figure(3)
+plot(psi, dFx_MS)
+title(<span class="string">"Force in x vs azimuth at all r locations"</span>)
+xlabel(<span class="string">"psi"</span>); ylabel(<span class="string">"dFx_MS"</span>)
+figure(4)
+plot(psi, dFz_MS)
+title(<span class="string">"Force in z vs azimuth at all r locations"</span>)
+xlabel(<span class="string">"psi"</span>); ylabel(<span class="string">"dFz_MS"</span>)
+figure(5)
+plot(r, dFx_MS')
+title(<span class="string">"Force in x vs radial location at all azimuth locations"</span>)
+xlabel(<span class="string">"r"</span>); ylabel(<span class="string">"dFx_MS"</span>)
+figure(6)
+plot(r, dFz_MS')
+title(<span class="string">"Force in z vs radial location at all azimuth locations"</span>)
+xlabel(<span class="string">"r"</span>); ylabel(<span class="string">"dFz_MS"</span>)
+figure(7)
+uniform_crt = ones(361, 100);
+surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), uniform_crt*lambda_TPP_UH60_FF(174))
+title(<span class="string">"Uniform Inflow"</span>); zlabel(<span class="string">"Uniform Inflow lambda"</span>)
+</pre><pre class="codeoutput">Warning: Imaginary parts of complex X and/or Y arguments ignored. 
 Warning: Imaginary parts of complex X and/or Y arguments ignored. 
 Warning: Imaginary parts of complex X and/or Y arguments ignored. 
 Warning: Imaginary parts of complex X and/or Y arguments ignored. 
-Warning: Imaginary parts of complex X and/or Y arguments ignored. 
-</pre><img vspace="5" hspace="5" src="main_inflow_script_01.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_02.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_03.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_04.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_05.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_06.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_07.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="main_inflow_script_01.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_02.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_03.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_04.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_05.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_06.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_07.png" alt=""> <h2 id="7">Assignment 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</h2><h2 id="8">Wake model</h2><h2 id="9">Constants</h2><pre class="codeinput"><span class="comment">%psi_w = wake age;</span>
+<span class="comment">%psi_b = blade azimuthal position</span>
+<span class="comment">% del_psi_w = 10;</span>
+<span class="comment">%</span>
+<span class="comment">% psi_w = (0:del_psi_w:360*6)*pi/180;</span>
+<span class="comment">% psi_b = psi*2;</span>
+epsilon_wake = 1;
+del_psi_w = pi/12;
+psi_b = psi;
+psi_w = 0:del_psi_w:3*pi;
+epsilon_wake = 1;
+</pre><h2 id="10">Wake functions</h2><pre class="codeinput"><span class="keyword">while</span> epsilon_wake &gt; 0.004
+    T_old_store = T_MS_bar;
+    [constant_circulation,constant_circulation_bar] = <span class="keyword">...</span>
+        find_constant_circulation(rho, omega, R, Nb, T_MS_bar, v_tip, A);
+    circulation_v = constant_circulation;
+    [xv, yv, zv, mu_z, mu_x, E, r_wake] = <span class="keyword">...</span>
+        find_prescribed_wake(lambda_TPP_linear_it(174), mu(174), alpha(174),<span class="keyword">...</span>
+        v_tip, r(100), psi, psi_w, psi_b);
+    [xv2, yv2, zv2, mu_z2, mu_x2, E2, r_wake2] = <span class="keyword">...</span>
+        find_prescribed_wake(lambda_TPP_linear_it(15), mu(15), alpha(15),<span class="keyword">...</span>
+        v_tip, r(100), psi, psi_w, psi_b);
+    [r_rotor] = find_rotor(psi_b, r, c);
+    disp(<span class="string">"display checkpoint1"</span>)
+    [V, lambda_wake] = find_biot_savart(circulation_v,<span class="keyword">...</span>
+        v_tip, r_wake, psi_w, psi_b, r_rotor, r);
+    disp(<span class="string">"display checkpoint2"</span>)
+    lambda_MS_total = lambda_wake(:,:,3);
+    <span class="keyword">for</span> P_B = 1:length(psi_b)
+        [u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,<span class="keyword">...</span>
+            Q_MS_bar, P_linear_bar, P_MS_bar, dL_MS, alpha_linear,alpha_MS,<span class="keyword">...</span>
+            dFx_MS, dFz_MS] = find_bemt(r, psi(P_B), mu(174), beta_MS_it(P_B,174), <span class="keyword">...</span>
+            beta_star_MS_it(P_B,174),v_inf, lambda_TPP_MS_it(174),<span class="keyword">...</span>
+            Cl_alpha,lambda_MS_total(:,P_B), theta_MS_it(P_B,174), rho, c,<span class="keyword">...</span>
+            R, cd0, N_psi, dr, Nb, omega, v_tip);
+        epsilon_wake = 100*(T_MS_bar - T_old_store)/T_old_store;
+        P_wake = P_MS_bar;
+    <span class="keyword">end</span>
+    disp(epsilon_wake)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">display checkpoint1
+display checkpoint2
+  -99.6074
+
+</pre><h2 id="11">Plot project 2</h2><pre class="codeinput">figure(8)
+plot3(xv, yv, zv)
+xlabel(<span class="string">"x"</span>); ylabel(<span class="string">"y"</span>); zlabel(<span class="string">"z"</span>);
+figure(9)
+plot3(xv(:,15), yv(:,15), zv(:,15))
+title(<span class="string">"Beddoes Wake Geometry at Blade azimuth of 15"</span>);
+xlabel(<span class="string">"x"</span>); ylabel(<span class="string">"y"</span>); zlabel(<span class="string">"z"</span>)
+figure(10)
+plot(psi_w, zv(:,15))
+title(<span class="string">"Beddoes Wake Geometry 2D x vs. z"</span>)
+figure(11)
+plot(psi_w, zv(:,1))
+title(<span class="string">"Beddoes Wake Geometry 2D wake angle vs. z; mu = 0.3496"</span>)
+figure(12)
+plot(psi_w, zv2(:,1))
+title(<span class="string">"Beddoes Wake Geometry 2D wake angle vs. z; mu = 0.02829"</span>)
+disp(<span class="string">"Thrust Wake ="</span>), disp(T_MS_bar_linear_it);
+disp(<span class="string">"Power Wake ="</span>), disp(P_MS_bar_linear_it);
+</pre><pre class="codeoutput">Thrust Wake =
+   1.1240e+04
+
+Power Wake =
+   7.0532e+04
+
+</pre><img vspace="5" hspace="5" src="main_inflow_script_08.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_09.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_10.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_11.png" alt=""> <img vspace="5" hspace="5" src="main_inflow_script_12.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 clc
 close
@@ -248,72 +272,39 @@ clear
 %% UH 60
 %Constants
 % Airfoil SC1095 & SC1094R8
-Nb = 4;
-N_psi = 360;
-R_i = 26.85;                                                           %ft
-a = 2*pi;                                                              %1/rad
-omega_i = 258;                                                              %rpm
-A_i = 2261.5;                                                          %ft^2
-A_blade_i = 186.8;                                                     %ft^2
-cd0 = 0.01;
-f_i = 35.04;                                                           %ft
-T_i = 20000;                                                           %lbs
-c_i = 20.76;                                                           %in
-rho = 1.225;                                                           %kg/m^3
-k = 1.15;
-L_tr = 45;  %% FIX LATER
-x_cg = 0;
-y_cg = 0;
-h = 5;  %% FIX LATER
-vb = 1;
-lock = 8;
-theta_tw = 0;
+[Nb, N_psi, R_i, a, omega_i,A_i,A_blade_i,cd0,f_i,T_i,c_i,rho,k,...
+    L_tr,x_cg,y_cg,h,vb, lock, theta_tw] = find_constants;
+[R,A,A_blade,f,v_inf_mph,v_inf,c,sigma,omega,v_tip,alpha_d,alpha,...
+    mu,T,CT_constant_T,lambda_hover,psi,e,r,Cl_alpha,nu,dr,...
+    linear_inflow_power,MS_inflow_power,w] = find_general_inflow(Nb, R_i,...
+    a, omega_i,A_i,A_blade_i,f_i,T_i,c_i,rho);
 
-%General
-R = R_i*0.3048;
-A = A_i*0.092903;
-A_blade = A_blade_i*0.092903;
-f = f_i*0.092903;
-v_inf_mph = 0:1:222;
-v_inf = v_inf_mph*0.44704;
-c = c_i*0.0254;
-sigma = (Nb*c)/(pi*R);
-omega = (omega_i/60)*2*pi;
-v_tip = omega*R;
-alpha_d = -2;                                                          %degrees
-alpha = -2*pi/180 * ones(1, 223);                                      %radians
-mu = v_inf.*cos(alpha)/(omega*R);                                      % small angle approximation
-T = T_i*4.4482216153;
-CT_constant_T = (T/(rho*A*v_tip^2)) * ones(1, 223);
-lambda_hover = sqrt(CT_constant_T/2);
-psi = (0:1:360)*pi/180;
-e = 0.17;
-r = linspace(e, 1, 100);
-Cl_alpha = a;
-nu = sqrt(1-r.^2);
-dr = (1-(e))/99;
-linear_inflow_power = 0.01;
-MS_inflow_power = 0.01;
-w = 0.3;
-%% functions
-[lambda_TPP_UH60_FF,lambda_i_TPP_UH60_FF,lambda_output] = find_linear_inflow(mu, alpha, CT_constant_T);
-[trim_inflow, CH_TPP_UH60_FF, CY_TPP_UH60_FF, beta, beta_dot, beta_star, theta, theta_dot, theta_star] = find_trim_inflow(mu, psi, CT_constant_T, sigma, f, A,L_tr, R, vb, linear_inflow_power, theta_tw,lambda_TPP_UH60_FF, omega, x_cg, y_cg, h, T, lock, a, cd0);
-%[coleman_data] = find_coleman_inflow(r, psi, v_inf, v_tip, alpha);
-%[lambda_1_i_MS_max] = find_MS_1_inflow(mu(223), psi, nu, alpha, CT_constant_T);
+%% Assignment 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Inflow Functions
+[lambda_TPP_UH60_FF,lambda_i_TPP_UH60_FF,lambda_output]...
+    = find_linear_inflow(mu, alpha, CT_constant_T);
+[trim_inflow, CH_TPP_UH60_FF, CY_TPP_UH60_FF, beta, beta_dot,...
+    beta_star, theta, theta_dot, theta_star]...
+    = find_trim_inflow(mu, psi, CT_constant_T, sigma, f, A,L_tr, R, vb,...
+    linear_inflow_power, theta_tw,lambda_TPP_UH60_FF, omega, x_cg, y_cg,...
+    h, T, lock, a, cd0);
+
 [cn_1] = find_MS_1_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-%[lambda_3_i_MS_max] = find_MS_3_inflow(mu(223), psi, nu, alpha, CT_constant_T);
 [cn_3] = find_MS_3_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-[w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu, CT_constant_T, mu(174));
-[u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar, Q_MS_bar,P_linear_bar, P_MS_bar] = ...
-    find_bemt(r, psi, mu(174), beta(:,174), beta_star(:,174),v_inf, lambda_TPP_UH60_FF(174),...
-    Cl_alpha,lambda_MS_total, theta(:,174), rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
+[w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu,...
+    CT_constant_T, mu(174));
+[u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,...
+    Q_MS_bar,P_linear_bar, P_MS_bar] = ...
+    find_bemt(r, psi, mu(174), beta(:,174), beta_star(:,174),v_inf, ...
+    lambda_TPP_UH60_FF(174),Cl_alpha,lambda_MS_total, theta(:,174),...
+    rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
 
 epsilon_t_linear_it = 1;
 epsilon_p_linear_it = 1;
 while (epsilon_t_linear_it > 0.004) && (epsilon_p_linear_it > 0.004)
     T = T_linear_bar;
     linear_inflow_power = P_linear_bar;
-    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223); %%%% FROM SCALAR TO VECTOR?????
+    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223);
     [lambda_TPP_linear_it,lambda_i_linear_it,lambda_output_linear_it] ...
         = find_linear_inflow(mu, alpha, CT_constant_T);
     [trim_inflow_linear_it, CH_TPP_UH60_FF_linear_it,...
@@ -328,7 +319,6 @@ while (epsilon_t_linear_it > 0.004) && (epsilon_p_linear_it > 0.004)
         find_bemt(r, psi, mu(174), beta_linear_it(:,174), beta_star_linear_it(:,174),v_inf, ...
         lambda_TPP_linear_it(174),Cl_alpha,lambda_MS_total, theta(:,174),...
         rho, c, R, cd0, N_psi, dr, Nb, omega, v_tip);
-    %alpha = alpha_linear;
     epsilon_t_linear_it = abs(T_linear_bar - T);
     epsilon_p_linear_it = abs(P_linear_bar - linear_inflow_power);
 end
@@ -338,7 +328,7 @@ epsilon_p_MS_it = 1;
 while (epsilon_t_MS_it > 0.004) && (epsilon_p_MS_it > 0.004)
     T = T_MS_bar;
     MS_inflow_power = P_MS_bar;
-    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223); %%%% FROM SCALAR TO VECTOR?????
+    CT_constant_T = (T./(rho*A*v_tip^2)) * ones(1, 223);
     [lambda_TPP_MS_it,lambda_i_TPP_MS_it,lambda_output] = ...
         find_linear_inflow(mu, alpha, CT_constant_T);
     [trim_inflow_MS_it, CH_TPP_UH60_FF_MS_it, CY_TPP_UH60_FF_MS_it, beta_MS_it,...
@@ -346,9 +336,7 @@ while (epsilon_t_MS_it > 0.004) && (epsilon_p_MS_it > 0.004)
         theta_dot_MS_it, theta_star_MS_it] = find_trim_inflow(mu, psi, CT_constant_T, sigma,...
         f, A,L_tr, R, vb, MS_inflow_power, theta_tw,lambda_TPP_MS_it, omega,...
         x_cg, y_cg, h, T, lock, a, cd0);
-    %[lambda_1_i_MS_max_it] = find_MS_1_inflow(mu(223), psi, nu, alpha, CT_constant_T);
     [cn_1] = find_MS_1_inflow(mu(174), psi, nu, alpha, CT_constant_T);
-    %[lambda_3_i_MS_max_it] = find_MS_3_inflow(mu(223), psi, nu, alpha, CT_constant_T);
     [cn_3] = find_MS_3_inflow(mu(174), psi, nu, alpha, CT_constant_T);
     [w,lambda_MS_total] = find_MS_real_inflow(cn_1, cn_3, w, psi,nu, CT_constant_T, mu(174));
     [u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,...
@@ -359,49 +347,110 @@ while (epsilon_t_MS_it > 0.004) && (epsilon_p_MS_it > 0.004)
         R, cd0, N_psi, dr, Nb, omega, v_tip);
     epsilon_t_MS_it = T_MS_bar - T;
     epsilon_p_MS_it = P_MS_bar - MS_inflow_power;
-    %alpha = alpha_MS;
+    P_MS = P_MS_bar;
 end
-disp("Thrust Linear")
-disp(T_linear_bar)
-disp("Thrust Mangler Squire")
-disp(T_MS_bar_linear_it)
-disp("Power Linear")
-disp(P_linear_bar)
-disp("Power Mangler Squire")
-disp(P_MS_bar_linear_it)
-hold on
+%% Display
+disp("Thrust Linear"); disp(T_linear_bar)
+disp("Thrust Mangler Squire"); disp(T_MS_bar_linear_it)
+disp("Power Linear"); disp(P_linear_bar)
+disp("Power Mangler Squire"); disp(P_MS_bar_linear_it)
+%% Plots P1
 figure (1)
 plot (mu, lambda_TPP_UH60_FF)
+title("Uniform inflow vs advance ratio")
+xlabel("advance ratio mu"); ylabel("uniform inflow lambda")
 figure (2)
-[r_grid psi_grid] = meshgrid(r,psi);
+[r_grid, psi_grid] = meshgrid(r,psi);
 surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), abs(lambda_MS_total));
-title("Force in x vs azimuth at all r locations")
+title("Non uniform Inflow")
 zlabel("Non uniform Inflow lambda")
 legend("Mangler & Squire Total Inflow")
 figure(3)
 plot(psi, dFx_MS)
 title("Force in x vs azimuth at all r locations")
-xlabel("psi")
-ylabel("dFx_MS")
+xlabel("psi"); ylabel("dFx_MS")
 figure(4)
 plot(psi, dFz_MS)
 title("Force in z vs azimuth at all r locations")
-xlabel("psi")
-ylabel("dFz_MS")
+xlabel("psi"); ylabel("dFz_MS")
 figure(5)
 plot(r, dFx_MS')
 title("Force in x vs radial location at all azimuth locations")
-xlabel("r")
-ylabel("dFx_MS")
+xlabel("r"); ylabel("dFx_MS")
 figure(6)
 plot(r, dFz_MS')
 title("Force in z vs radial location at all azimuth locations")
-xlabel("r")
-ylabel("dFz_MS")
+xlabel("r"); ylabel("dFz_MS")
 figure(7)
 uniform_crt = ones(361, 100);
 surf(r_grid.*cos(psi_grid), r_grid.*sin(psi_grid), uniform_crt*lambda_TPP_UH60_FF(174))
+title("Uniform Inflow"); zlabel("Uniform Inflow lambda")
+
+%% Assignment 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Wake model
+%% Constants
+%psi_w = wake age;
+%psi_b = blade azimuthal position
+% del_psi_w = 10;
+% 
+% psi_w = (0:del_psi_w:360*6)*pi/180;
+% psi_b = psi*2;
+epsilon_wake = 1;
+del_psi_w = pi/12;
+psi_b = psi;
+psi_w = 0:del_psi_w:3*pi;
+epsilon_wake = 1;
+
+%% Wake functions
+while epsilon_wake > 0.004
+    T_old_store = T_MS_bar;
+    [constant_circulation,constant_circulation_bar] = ...
+        find_constant_circulation(rho, omega, R, Nb, T_MS_bar, v_tip, A);
+    circulation_v = constant_circulation;
+    [xv, yv, zv, mu_z, mu_x, E, r_wake] = ...
+        find_prescribed_wake(lambda_TPP_linear_it(174), mu(174), alpha(174),...
+        v_tip, r(100), psi, psi_w, psi_b);
+    [xv2, yv2, zv2, mu_z2, mu_x2, E2, r_wake2] = ...
+        find_prescribed_wake(lambda_TPP_linear_it(15), mu(15), alpha(15),...
+        v_tip, r(100), psi, psi_w, psi_b);
+    [r_rotor] = find_rotor(psi_b, r, c);
+    disp("display checkpoint1")
+    [V, lambda_wake] = find_biot_savart(circulation_v,...
+        v_tip, r_wake, psi_w, psi_b, r_rotor, r);
+    disp("display checkpoint2")
+    lambda_MS_total = lambda_wake(:,:,3);
+    for P_B = 1:length(psi_b)
+        [u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,...
+            Q_MS_bar, P_linear_bar, P_MS_bar, dL_MS, alpha_linear,alpha_MS,...
+            dFx_MS, dFz_MS] = find_bemt(r, psi(P_B), mu(174), beta_MS_it(P_B,174), ...
+            beta_star_MS_it(P_B,174),v_inf, lambda_TPP_MS_it(174),...
+            Cl_alpha,lambda_MS_total(:,P_B), theta_MS_it(P_B,174), rho, c,...
+            R, cd0, N_psi, dr, Nb, omega, v_tip);
+        epsilon_wake = 100*(T_MS_bar - T_old_store)/T_old_store;
+        P_wake = P_MS_bar;
+    end
+    disp(epsilon_wake)
+end
 
 
+%% Plot project 2
+figure(8)
+plot3(xv, yv, zv)
+xlabel("x"); ylabel("y"); zlabel("z");
+figure(9)
+plot3(xv(:,15), yv(:,15), zv(:,15))
+title("Beddoes Wake Geometry at Blade azimuth of 15"); 
+xlabel("x"); ylabel("y"); zlabel("z")
+figure(10)
+plot(psi_w, zv(:,15))
+title("Beddoes Wake Geometry 2D x vs. z")
+figure(11)
+plot(psi_w, zv(:,1))
+title("Beddoes Wake Geometry 2D wake angle vs. z; mu = 0.3496")
+figure(12)
+plot(psi_w, zv2(:,1))
+title("Beddoes Wake Geometry 2D wake angle vs. z; mu = 0.02829")
+disp("Thrust Wake ="), disp(T_MS_bar_linear_it);
+disp("Power Wake ="), disp(P_MS_bar_linear_it);
 ##### SOURCE END #####
 --></body></html>

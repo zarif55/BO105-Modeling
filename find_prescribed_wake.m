@@ -12,12 +12,12 @@ mu_z = mu.*sin(alpha)./v_tip;
 rv = 1;
 
 %% defining functions
-zv1_fn = @(lambda_io, mu_z, psi_b, psi_w, mu_x, E, y0, x0) mu_z.*psi_w - ...
-    ((2.*lambda_io.*psi_w).*(1-(E.*(abs(y0).^3))));
-zv2_fn = @(lambda_io, mu_z, psi_b, psi_w, mu_x, E, y0, x0) mu_z.*psi_w - ...
-    ((2.*lambda_io.*x0./mu_x).*(1-(E.*(abs(y0).^3))));
-zv3_fn = @(lambda_io, mu_z, psi_b, psi_w, mu_x, E, y0, x0) mu_z*psi_w - ...
+zv1_fn = @(lambda_io, mu_z, psi_b, psi_w, mu_x, E, y0, x0) mu_z*psi_w - ...
     lambda_io.*psi_w.*(1+(E.*(x0+(0.5.*mu_x.*psi_w)-(abs(y0).^3))));
+zv2_fn = @(lambda_io, mu_z, psi_b, psi_w, mu_x, E, y0, x0) mu_z.*psi_w - ...
+    ((2.*lambda_io.*psi_w).*(1-(E.*(abs(y0).^3))));
+zv3_fn = @(lambda_io, mu_z, psi_b, psi_w, mu_x, E, y0, x0) mu_z.*psi_w - ...
+    ((2.*lambda_io.*x0./mu_x).*(1-(E.*(abs(y0).^3))));
 %%
 %%zv = %% initialize
 zv1_count = 0;
@@ -43,12 +43,13 @@ for n = 1:length(psi_w)
         end
     end
 end
-disp(size(xv))
-disp(size(yv))
-disp(size(zv))
-disp(zv1_count)
-disp(zv2_count)
-disp(zv3_count)
+zv(1, :) = 0;
+% disp(size(xv))
+% disp(size(yv))
+% disp(size(zv))
+% disp(zv1_count)
+% disp(zv2_count)
+% disp(zv3_count)
 r_wake = cat(3, xv, yv, zv);
 
 
