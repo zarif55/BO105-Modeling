@@ -1,0 +1,482 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>untitled</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-04-10"><meta name="DC.source" content="untitled.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Constants</a></li><li><a href="#3">General</a></li><li><a href="#4">Question 1a</a></li><li><a href="#5">Question 1b</a></li><li><a href="#6">Question 1c</a></li></ul></div><pre class="codeinput">clc
+clear
+close <span class="string">all</span>
+</pre><h2 id="2">Constants</h2><pre class="codeinput">Nb = 4;
+R = 20; <span class="comment">%ft</span>
+c = 1; <span class="comment">%ft</span>
+v_tip = 650; <span class="comment">%ft/sec</span>
+W = 20000; <span class="comment">%lbs</span>
+h = 5; <span class="comment">%ft</span>
+a = 5.7; <span class="comment">%per</span>
+x_cg = 0; <span class="comment">%ft</span>
+vb = 1.04;
+lock = 10;
+cd0 = 0.012;
+L_tr = 25; <span class="comment">%ft ;</span>
+f = 15; <span class="comment">%ft^2</span>
+y_cg = 0;
+k = 1.15;
+rho_0 = 0.002378;
+</pre><h2 id="3">General</h2><pre class="codeinput">h_alt = 0;
+rho = rho_0*exp(-0.0297*h_alt/1000);
+A = pi*R^2;
+omega = v_tip/R;
+psi_d = 0:1:360;
+psi = 0:pi/180:2*pi;
+</pre><h2 id="4">Question 1a</h2><p>Hover advance ratio = 0</p><pre class="codeinput">mu_hover = 0;
+T_hover = W;
+theta_tw = 0; <span class="comment">%page 8</span>
+sigma = (Nb*c)/(pi*R);
+CW = W/(rho*(pi*R^2)*(v_tip)^2);
+CT = CW;
+CP_hover = k*(CT^(3/2))/sqrt(2) + (sigma*cd0/8);
+YF_W_hover = CP_hover*R/CT/L_tr;
+lambda_TPP_hover = k*sqrt(CT/2);
+CH_TPP_hover = 0;
+CY_TPP_hover = 0;
+M_yF_hover = 0;
+M_xF_hover = 0;
+beta_1c_hover =((-x_cg/h)+(M_yF_hover/(W*h))+(CH_TPP_hover/CT))/(1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))));
+beta_1s_hover =((y_cg/h)-(M_xF_hover/(W*h))+(CY_TPP_hover/CT))/(1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))));
+alpha_shaft_hover =(((x_cg/h)-(M_yF_hover/(W*h))+(((((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))))*CH_TPP_hover/CT))) /<span class="keyword">...</span>
+    (1+ (((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))) );
+phi_shaft_hover = ((((y_cg/h)-(M_xF_hover/(W*h)) -(((((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))))*CY_TPP_hover/CT))) / <span class="keyword">...</span>
+    (1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))))) - (CP_hover*R/CT/L_tr);
+theta_knot_hover = (((6*CT/sigma/a)*(1+((3/2)*(mu_hover^2)))) -((0.75*theta_tw)*(1-(1.5*mu_hover^2)+(1.5*mu_hover^4))) + <span class="keyword">...</span>
+    (1.5*lambda_TPP_hover*(1-(0.5*mu_hover^2)))) +((4/lock)*mu_hover*((vb^2)-1)*beta_1s_hover) / (1 - (mu_hover^2) +(9/4*mu_hover^4));
+theta_1s_hover = -beta_1c_hover +((1/(1+(1.5*mu_hover^2)))*((-8/3*mu_hover*(theta_knot_hover+ (0.75*theta_tw) -(0.75*lambda_TPP_hover)))+<span class="keyword">...</span>
+    ( (8/lock)*((vb^2)-1)*(beta_1s_hover) ) ));
+beta_knot_hover = (lock/vb^2)*((theta_knot_hover/8)+(theta_tw/10)-(lambda_TPP_hover/6));
+<span class="comment">%Beta_p_hover is zero</span>
+theta_1c_hover = beta_1s_hover +((1/(1+(0.5*mu_hover^2)))*((4/3*mu_hover*beta_knot_hover) +((8/lock)*((vb^2)-1)*beta_1c_hover)));
+</pre><h2 id="5">Question 1b</h2><pre class="codeinput">v_inf= 200; <span class="comment">%ft/s</span>
+mu_FF = 200/v_tip ; <span class="comment">%cos(alpha) = 1 assuming alpha is small</span>
+v_climb_FF = 0; <span class="comment">% edgewise forward flight gamma is small v_inf*sin(gamma) = 0</span>
+lambda_climb_FF = v_climb_FF/v_tip;
+lambda_TPP_FF = zeros(1,100);
+lambda_TPP_FF(1) = k*sqrt(CT/2);
+CP_FF = ((k*CT^2)/(2*mu_FF)) + ((sigma*cd0/8)*(1+(4.6*mu_FF^2))) + ((1/2)*(f/A)*(mu_FF^3))+ (lambda_climb_FF*CT);
+YF_W_FF = CP_FF*R/CT/L_tr;
+CH_TPP_FF(1) = 0;
+CY_TPP_FF(1) = 0;
+err = 1;
+<span class="keyword">while</span> err &gt; 0.005
+    <span class="keyword">for</span> n = 1:100
+        lambda_TPP_FF(n+1) = CT/(2*sqrt((mu_FF^2)+(lambda_TPP_FF(n))^2)) +((1/2)*(f/A)*(mu_FF^3/CT));
+        M_yF_FF = 0;
+        M_xF_FF = 0;
+        beta_1c_FF(n) = ( (-x_cg/h) + (M_yF_FF/(W*h)) <span class="keyword">...</span>
+            + (CH_TPP_FF(n)/CT)) / ( 1+((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT)) );
+        beta_1s_FF(n) = ((y_cg/h) - (M_xF_FF/(W*h))<span class="keyword">...</span>
+            +(CY_TPP_FF(n)/CT))/(1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))));
+        alpha_shaft_FF(n) = ((((x_cg/h) - (M_yF_FF/(W*h)) +((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT))*CH_TPP_FF(n)/CT))) / <span class="keyword">...</span>
+            (1+((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT))) + ((1/2)*(f/A)*(mu_FF^2)/CT);
+        phi_shaft_FF(n) = (((y_cg/h) - (M_xF_FF/(W*h)) -(((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT))*CY_TPP_FF(n)/CT)) / <span class="keyword">...</span>
+            (1+((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT)))) - (CP_FF*R/CT/L_tr);
+        theta_knot_FF(n) = ((6*CT/sigma/a)*(1+(3/2*mu_FF^2)) -((0.75*theta_tw)*(1-(1.5*mu_FF^2)+(1.5*mu_FF^4))) + <span class="keyword">...</span>
+            ((1.5*lambda_TPP_FF(n))*(1-(0.5*mu_FF^2))) + ((4/lock)*mu_FF*((vb^2)-1)*beta_1s_FF(n)))/ (1 - (mu_FF^2) +(9/4*mu_FF^4));
+        theta_1s_FF(n) = -beta_1c_FF(n) +((1/(1+(1.5*mu_FF^2)))*((-8/3*mu_FF*(theta_knot_FF(n)+(0.75*theta_tw) - <span class="keyword">...</span>
+            (0.75*lambda_TPP_FF(n)))) + ( (8/lock)*((vb^2)-1)*(beta_1s_FF(n)) ) ));
+        beta_knot_FF(n) = (lock/vb^2)* ( ((1+(mu_FF^2))*theta_knot_FF(n)/8) +((1+mu_FF^2)*theta_tw/10) + <span class="keyword">...</span>
+            ((1/6)*mu_FF*(beta_1c_FF(n)+ theta_1s_FF(n))) - (lambda_TPP_FF(n)/6) ) ;
+        theta_1c_FF(n) = beta_1s_FF(n) + ( (1/(1+(0.5*mu_FF^2))) * ((4/3*mu_FF*beta_knot_FF(n))+ ((8/lock)*((vb^2)-1)*beta_1c_FF(n))) ) ;
+        CH_TPP_FF(n+1) = ((sigma*a/2)*((((1/2)*mu_FF*lambda_TPP_FF(n)*(theta_knot_FF(n)+(0.5*theta_tw)))) - <span class="keyword">...</span>
+            (((1/6)*beta_knot_FF(n)*theta_1c_FF(n)) + ((1/4)*theta_1s_FF(n)*lambda_TPP_FF(n)) +((1/4)*mu_FF*beta_knot_FF(n)^2)))) + (sigma*cd0*mu_FF/4);
+        CY_TPP_FF(n+1) = -(sigma*a/2)* (((3/4)*mu_FF*beta_knot_FF(n)*(theta_knot_FF(n)+((2/3)*theta_tw))) + <span class="keyword">...</span>
+            ((1/4)*theta_1c_FF(n)*lambda_TPP_FF(n)) +((1/6)*beta_knot_FF(n)*theta_1s_FF(n)*(1+(3*(mu_FF^2)) )) -((3/2)*mu_FF*beta_knot_FF(n)*lambda_TPP_FF(n)) );
+        err = abs(lambda_TPP_FF(n+1) - lambda_TPP_FF(n));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+figure(1)
+title(<span class="string">"Convergence"</span>)
+hold <span class="string">on</span>
+xlabel(<span class="string">"Iterations"</span>)
+ylabel(<span class="string">"Angles in Degrees"</span>)
+plot(beta_1c_FF*180/pi)
+plot(beta_1s_FF*180/pi)
+plot(alpha_shaft_FF*180/pi)
+plot(phi_shaft_FF*180/pi)
+plot(theta_knot_FF*180/pi)
+plot(theta_1s_FF*180/pi)
+plot(beta_knot_FF*180/pi)
+plot(theta_1c_FF*180/pi)
+legend(<span class="string">"Beta 1c"</span>, <span class="string">"Beta 1s"</span>, <span class="string">"Theta 1s"</span>, <span class="string">"Theta 1c"</span>,<span class="keyword">...</span>
+    <span class="string">"Alpha shaft"</span>,<span class="string">"Phi shaft"</span>,<span class="string">"Beta knot"</span>,<span class="string">"Theta knot"</span>)
+<span class="keyword">for</span> z = 1:361
+    r = 0.8*R;
+    theta_FF(z) = theta_knot_FF(50) + (theta_1c_FF(50)*cos(psi(z))) +theta_1s_FF(50)*sin(psi(z));
+    beta_FF(z) = beta_knot_FF(50) + beta_1c_FF(10)*cos((psi(z))) +beta_1s_FF(50)*sin((psi(z)));
+    beta_FF_dot(z) = - beta_1c_FF(50)*sin((psi(z))) + beta_1s_FF(50)*cos((psi(z)));
+    ut_FF(z) = omega*r + (mu_FF*omega*R*sin(psi(z)));
+    up_FF(z) = (lambda_TPP_FF(50)*omega*R) + (r*beta_FF_dot(z)) +(beta_FF(z)*mu_FF*omega*R*cos(psi(z)));
+    phi_FF(z) = up_FF(z)/ut_FF(z);
+    alpha_FF(z) = theta_FF(z) - phi_FF(z);
+    alpha_FF_d(z) = alpha_FF(z)*180/pi;
+<span class="keyword">end</span>
+figure(2)
+plot(psi_d, alpha_FF_d);
+title(<span class="string">"Angle of Attack vs. Azimuth Angle in degrees"</span>)
+xlabel(<span class="string">"psi"</span>)
+ylabel(<span class="string">"alpha"</span>)
+</pre><img vspace="5" hspace="5" src="untitled_01.png" alt=""> <img vspace="5" hspace="5" src="untitled_02.png" alt=""> <h2 id="6">Question 1c</h2><pre class="codeinput"><span class="comment">%HtFF = hover to forward flight</span>
+mu_HtFF = 0:0.1:0.5;
+f_HtFF = [f*0.5, f, f*1.5];
+CH_TPP_HtFF = 0;
+CY_TPP_HtFF = 0;
+lambda_TPP_HtFF = k*sqrt(CT/2)*ones(100, 1);
+<span class="keyword">for</span> m = 2:6
+    lambda_TPP_HtFF(1, m) = k*sqrt(CT/2);
+    <span class="keyword">for</span> n=2:100
+        lambda_TPP_HtFF(n, m) = (CT/(2*sqrt((mu_HtFF(m)^2)+(lambda_TPP_HtFF(n-1, m))^2)))+ ((1/2)*(f/A)*(mu_HtFF(m)^3/CT));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+lambda_TPP_HtFF = lambda_TPP_HtFF(100, :);
+lambda_HtFF = lambda_TPP_HtFF;
+<span class="keyword">for</span> m = 1:6
+    CP_HtFF = ((k*CT^2)/(2*mu_HtFF(m))) + ((sigma*cd0/8)*(1+(4.6*mu_HtFF(m)^2)))<span class="keyword">...</span>
+        +((1/2)*(f/A)*(mu_HtFF(m)^3)) + (lambda_climb_FF*CT);
+<span class="keyword">end</span>
+YF_W_FF = CP_FF*R/CT/L_tr;
+plot_data = zeros(3, 6, 8);
+<span class="keyword">for</span> k = 1:3
+    <span class="keyword">for</span> m = 1:6
+        <span class="keyword">for</span> p = 1:6
+            M_yF_HtFF = 1;
+            M_xF_HtFF = 1;
+                beta_1c_HtFF = (-x_cg/h + M_yF_HtFF / (h * W)<span class="keyword">...</span>
+                    + (CH_TPP_HtFF / CT)) / (1 + ((vb^2 - 1)<span class="keyword">...</span>
+        / lock) / ((h * 2 * CT) / (R * sigma * a)));
+
+            beta_1s_HtFF = (y_cg / h - M_xF_HtFF / (h * W)<span class="keyword">...</span>
+                + (CY_TPP_HtFF / CT)) / (1 + ((vb^2 - 1)<span class="keyword">...</span>
+        / lock) / (h * 2 * CT / (R * sigma * a)));
+
+
+    alpha_shaft_HtFF = (x_cg / h - M_yF_HtFF / (h * W) + ((vb^2 - 1) / lock)<span class="keyword">...</span>
+        *(CH_TPP_HtFF / CT) / (h * 2 * CT / (R * sigma * a))) / (1 + ((vb^2 - 1)<span class="keyword">...</span>
+        / lock) / (h * 2 * CT / (omega * sigma * a)))<span class="keyword">...</span>
+        + 0.5 * f_HtFF(k) * mu_HtFF(m)^2 / (A * CT);
+    phi_shaft_HtFF = (y_cg / h - M_xF_HtFF / (h * W) - ((vb^2 - 1) / lock)<span class="keyword">...</span>
+        * (CH_TPP_HtFF / CT) / (h * 2 * CT / (sigma * R * a))) / (1 + (vb^2 - 1) * R * sigma * a / (lock * 2 * h * CT)) - YF_W_FF;
+    theta_knot_HtFF = ((6 * CT / (sigma * a)) * (1 + 3 * mu_HtFF(m)^2 / 2)<span class="keyword">...</span>
+        + lambda_HtFF(m)* 1.5 * (1 - 0.5 * mu_HtFF(m)^2) + 3 * mu_HtFF(m) * beta_1s_HtFF * (vb^2 - 1) / lock) / (1 - mu_HtFF(m)^2 + 0.25 * 9 * (mu_HtFF(m)^4));
+    theta_1s_HtFF = - beta_1c_HtFF + (1 / (1 + 1.5 * mu_HtFF(m)^2)) * (8 * (vb^2 - 1)<span class="keyword">...</span>
+        * beta_1s_HtFF / lock - (8 * mu_HtFF(m) / 3) * (theta_knot_HtFF - 3 * lambda_HtFF(m) * 0.25));
+    beta_knot_HtFF = (lock / (vb^2)) * (theta_knot_HtFF * (1 + mu_HtFF(m)^2) / 8 + mu_HtFF(m)* (beta_1c_HtFF + theta_1s_HtFF) / 6 - lambda_HtFF(m) / 6);
+    theta_1c_HtFF = beta_1s_HtFF + (1 / (1 + 1.5* mu_HtFF(m)^2))<span class="keyword">...</span>
+        * ((4/3* mu_HtFF(m)* beta_knot_HtFF)<span class="keyword">...</span>
+        + (8/lock) * (vb^2 - 1) * beta_1c_HtFF);
+
+    CH_TPP_HtFF = sigma*a*0.5*(1/2*mu_HtFF(m)* lambda_HtFF(m)*theta_knot_HtFF- <span class="keyword">...</span>
+        (beta_knot_HtFF*theta_1c_HtFF/6)<span class="keyword">...</span>
+        +0.25*theta_1s_HtFF*lambda_HtFF(m)<span class="keyword">...</span>
+        +0.25*mu_HtFF(m)*beta_knot_HtFF^2) <span class="keyword">...</span>
+        + sigma*cd0*mu_HtFF(m)/ 4;
+    CY_TPP_HtFF = - sigma * a * 0.5 * (3 * mu_HtFF(m)* beta_knot_HtFF * theta_knot_HtFF / 4 + 0.25 * theta_1c_HtFF * lambda_HtFF(m)<span class="keyword">...</span>
+        + beta_knot_HtFF * theta_1s_HtFF * (1 + 3 * mu_HtFF(m)^2) / 6 - 3 * mu_HtFF(m)* beta_knot_HtFF * lambda_HtFF(m) / 2);
+        <span class="keyword">end</span>
+        plot_data(k, m, 1) = beta_1c_HtFF;
+        plot_data(k, m, 2) = beta_1s_HtFF;
+        plot_data(k, m, 3) = theta_1c_HtFF;
+        plot_data(k, m, 4) = theta_1s_HtFF;
+        plot_data(k, m, 5) = alpha_shaft_HtFF;
+        plot_data(k, m, 6) = phi_shaft_HtFF;
+        plot_data(k, m, 7) = beta_knot_HtFF;
+        plot_data(k, m, 8) = theta_knot_HtFF;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+titles = [<span class="string">"Beta 1c vs. mu"</span>, <span class="string">"Beta 1s vs. mu"</span>, <span class="string">"Theta 1s vs. mu"</span>, <span class="string">"Theta 1c vs. mu"</span>,<span class="keyword">...</span>
+    <span class="string">"Alpha shaft vs. mu"</span>,<span class="string">"Phi shaft vs. mu"</span>,<span class="string">"Beta knot vs. mu"</span>,<span class="string">"Theta knot vs. mu"</span>];
+y_labels = [<span class="string">"Beta 1c"</span>, <span class="string">"Beta 1s"</span>, <span class="string">"Theta 1s"</span>, <span class="string">"Theta 1c"</span>,<span class="string">"Alpha shaft"</span>,<span class="string">"Phi shaft"</span>,<span class="string">"Beta knot"</span>,<span class="string">"Theta knot"</span>];
+<span class="keyword">for</span> n = 1:8
+    figure(n+2)
+    clf
+    plot(mu_HtFF, plot_data(:,:,n)*180/pi)
+    title((titles(n)))
+    ylabel(y_labels(n))
+    xlabel(<span class="string">"mu"</span>)
+    legend(<span class="string">"f= 7.5"</span>, <span class="string">"f= 1.5"</span>, <span class="string">"f= 22.5"</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">
+lambda_HtFF =
+
+    0.1023    0.0664    0.0418    0.0364    0.0438    0.0628
+
+</pre><img vspace="5" hspace="5" src="untitled_03.png" alt=""> <img vspace="5" hspace="5" src="untitled_04.png" alt=""> <img vspace="5" hspace="5" src="untitled_05.png" alt=""> <img vspace="5" hspace="5" src="untitled_06.png" alt=""> <img vspace="5" hspace="5" src="untitled_07.png" alt=""> <img vspace="5" hspace="5" src="untitled_08.png" alt=""> <img vspace="5" hspace="5" src="untitled_09.png" alt=""> <img vspace="5" hspace="5" src="untitled_10.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc
+clear
+close all
+%% Constants
+Nb = 4;
+R = 20; %ft
+c = 1; %ft
+v_tip = 650; %ft/sec
+W = 20000; %lbs
+h = 5; %ft
+a = 5.7; %per
+x_cg = 0; %ft
+vb = 1.04;
+lock = 10;
+cd0 = 0.012;
+L_tr = 25; %ft ;
+f = 15; %ft^2
+y_cg = 0;
+k = 1.15;
+rho_0 = 0.002378;
+%% General
+h_alt = 0;
+rho = rho_0*exp(-0.0297*h_alt/1000);
+A = pi*R^2;
+omega = v_tip/R;
+psi_d = 0:1:360;
+psi = 0:pi/180:2*pi;
+%% Question 1a
+% Hover advance ratio = 0
+mu_hover = 0;
+T_hover = W;
+theta_tw = 0; %page 8
+sigma = (Nb*c)/(pi*R);
+CW = W/(rho*(pi*R^2)*(v_tip)^2);
+CT = CW;
+CP_hover = k*(CT^(3/2))/sqrt(2) + (sigma*cd0/8);
+YF_W_hover = CP_hover*R/CT/L_tr;
+lambda_TPP_hover = k*sqrt(CT/2);
+CH_TPP_hover = 0;
+CY_TPP_hover = 0;
+M_yF_hover = 0;
+M_xF_hover = 0;
+beta_1c_hover =((-x_cg/h)+(M_yF_hover/(W*h))+(CH_TPP_hover/CT))/(1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))));
+beta_1s_hover =((y_cg/h)-(M_xF_hover/(W*h))+(CY_TPP_hover/CT))/(1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))));
+alpha_shaft_hover =(((x_cg/h)-(M_yF_hover/(W*h))+(((((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))))*CH_TPP_hover/CT))) /...
+    (1+ (((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))) );
+phi_shaft_hover = ((((y_cg/h)-(M_xF_hover/(W*h)) -(((((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))))*CY_TPP_hover/CT))) / ...
+    (1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))))) - (CP_hover*R/CT/L_tr);
+theta_knot_hover = (((6*CT/sigma/a)*(1+((3/2)*(mu_hover^2)))) -((0.75*theta_tw)*(1-(1.5*mu_hover^2)+(1.5*mu_hover^4))) + ...
+    (1.5*lambda_TPP_hover*(1-(0.5*mu_hover^2)))) +((4/lock)*mu_hover*((vb^2)-1)*beta_1s_hover) / (1 - (mu_hover^2) +(9/4*mu_hover^4));
+theta_1s_hover = -beta_1c_hover +((1/(1+(1.5*mu_hover^2)))*((-8/3*mu_hover*(theta_knot_hover+ (0.75*theta_tw) -(0.75*lambda_TPP_hover)))+...
+    ( (8/lock)*((vb^2)-1)*(beta_1s_hover) ) ));
+beta_knot_hover = (lock/vb^2)*((theta_knot_hover/8)+(theta_tw/10)-(lambda_TPP_hover/6));
+%Beta_p_hover is zero
+theta_1c_hover = beta_1s_hover +((1/(1+(0.5*mu_hover^2)))*((4/3*mu_hover*beta_knot_hover) +((8/lock)*((vb^2)-1)*beta_1c_hover)));
+%% Question 1b
+v_inf= 200; %ft/s
+mu_FF = 200/v_tip ; %cos(alpha) = 1 assuming alpha is small
+v_climb_FF = 0; % edgewise forward flight gamma is small v_inf*sin(gamma) = 0
+lambda_climb_FF = v_climb_FF/v_tip;
+lambda_TPP_FF = zeros(1,100);
+lambda_TPP_FF(1) = k*sqrt(CT/2);
+CP_FF = ((k*CT^2)/(2*mu_FF)) + ((sigma*cd0/8)*(1+(4.6*mu_FF^2))) + ((1/2)*(f/A)*(mu_FF^3))+ (lambda_climb_FF*CT);
+YF_W_FF = CP_FF*R/CT/L_tr;
+CH_TPP_FF(1) = 0;
+CY_TPP_FF(1) = 0;
+err = 1;
+while err > 0.005
+    for n = 1:100
+        lambda_TPP_FF(n+1) = CT/(2*sqrt((mu_FF^2)+(lambda_TPP_FF(n))^2)) +((1/2)*(f/A)*(mu_FF^3/CT));
+        M_yF_FF = 0;
+        M_xF_FF = 0;
+        beta_1c_FF(n) = ( (-x_cg/h) + (M_yF_FF/(W*h)) ...
+            + (CH_TPP_FF(n)/CT)) / ( 1+((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT)) );
+        beta_1s_FF(n) = ((y_cg/h) - (M_xF_FF/(W*h))...
+            +(CY_TPP_FF(n)/CT))/(1+(((vb^2)-1)/(lock*(2*h*CT/R/sigma/a))));
+        alpha_shaft_FF(n) = ((((x_cg/h) - (M_yF_FF/(W*h)) +((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT))*CH_TPP_FF(n)/CT))) / ...
+            (1+((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT))) + ((1/2)*(f/A)*(mu_FF^2)/CT);
+        phi_shaft_FF(n) = (((y_cg/h) - (M_xF_FF/(W*h)) -(((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT))*CY_TPP_FF(n)/CT)) / ...
+            (1+((((vb^2)-1)*R*sigma*a)/(lock*2*h*CT)))) - (CP_FF*R/CT/L_tr);
+        theta_knot_FF(n) = ((6*CT/sigma/a)*(1+(3/2*mu_FF^2)) -((0.75*theta_tw)*(1-(1.5*mu_FF^2)+(1.5*mu_FF^4))) + ...
+            ((1.5*lambda_TPP_FF(n))*(1-(0.5*mu_FF^2))) + ((4/lock)*mu_FF*((vb^2)-1)*beta_1s_FF(n)))/ (1 - (mu_FF^2) +(9/4*mu_FF^4));
+        theta_1s_FF(n) = -beta_1c_FF(n) +((1/(1+(1.5*mu_FF^2)))*((-8/3*mu_FF*(theta_knot_FF(n)+(0.75*theta_tw) - ...
+            (0.75*lambda_TPP_FF(n)))) + ( (8/lock)*((vb^2)-1)*(beta_1s_FF(n)) ) ));
+        beta_knot_FF(n) = (lock/vb^2)* ( ((1+(mu_FF^2))*theta_knot_FF(n)/8) +((1+mu_FF^2)*theta_tw/10) + ...
+            ((1/6)*mu_FF*(beta_1c_FF(n)+ theta_1s_FF(n))) - (lambda_TPP_FF(n)/6) ) ;
+        theta_1c_FF(n) = beta_1s_FF(n) + ( (1/(1+(0.5*mu_FF^2))) * ((4/3*mu_FF*beta_knot_FF(n))+ ((8/lock)*((vb^2)-1)*beta_1c_FF(n))) ) ;
+        CH_TPP_FF(n+1) = ((sigma*a/2)*((((1/2)*mu_FF*lambda_TPP_FF(n)*(theta_knot_FF(n)+(0.5*theta_tw)))) - ...
+            (((1/6)*beta_knot_FF(n)*theta_1c_FF(n)) + ((1/4)*theta_1s_FF(n)*lambda_TPP_FF(n)) +((1/4)*mu_FF*beta_knot_FF(n)^2)))) + (sigma*cd0*mu_FF/4);
+        CY_TPP_FF(n+1) = -(sigma*a/2)* (((3/4)*mu_FF*beta_knot_FF(n)*(theta_knot_FF(n)+((2/3)*theta_tw))) + ...
+            ((1/4)*theta_1c_FF(n)*lambda_TPP_FF(n)) +((1/6)*beta_knot_FF(n)*theta_1s_FF(n)*(1+(3*(mu_FF^2)) )) -((3/2)*mu_FF*beta_knot_FF(n)*lambda_TPP_FF(n)) );
+        err = abs(lambda_TPP_FF(n+1) - lambda_TPP_FF(n));
+    end
+end
+figure(1)
+title("Convergence")
+hold on
+xlabel("Iterations")
+ylabel("Angles in Degrees")
+plot(beta_1c_FF*180/pi)
+plot(beta_1s_FF*180/pi)
+plot(alpha_shaft_FF*180/pi)
+plot(phi_shaft_FF*180/pi)
+plot(theta_knot_FF*180/pi)
+plot(theta_1s_FF*180/pi)
+plot(beta_knot_FF*180/pi)
+plot(theta_1c_FF*180/pi)
+legend("Beta 1c", "Beta 1s", "Theta 1s", "Theta 1c",...
+    "Alpha shaft","Phi shaft","Beta knot","Theta knot")
+for z = 1:361
+    r = 0.8*R;
+    theta_FF(z) = theta_knot_FF(50) + (theta_1c_FF(50)*cos(psi(z))) +theta_1s_FF(50)*sin(psi(z));
+    beta_FF(z) = beta_knot_FF(50) + beta_1c_FF(10)*cos((psi(z))) +beta_1s_FF(50)*sin((psi(z)));
+    beta_FF_dot(z) = - beta_1c_FF(50)*sin((psi(z))) + beta_1s_FF(50)*cos((psi(z)));
+    ut_FF(z) = omega*r + (mu_FF*omega*R*sin(psi(z)));
+    up_FF(z) = (lambda_TPP_FF(50)*omega*R) + (r*beta_FF_dot(z)) +(beta_FF(z)*mu_FF*omega*R*cos(psi(z)));
+    phi_FF(z) = up_FF(z)/ut_FF(z);
+    alpha_FF(z) = theta_FF(z) - phi_FF(z);
+    alpha_FF_d(z) = alpha_FF(z)*180/pi;
+end
+figure(2)
+plot(psi_d, alpha_FF_d);
+title("Angle of Attack vs. Azimuth Angle in degrees")
+xlabel("psi")
+ylabel("alpha")
+%% Question 1c
+%HtFF = hover to forward flight
+mu_HtFF = 0:0.1:0.5;
+f_HtFF = [f*0.5, f, f*1.5];
+CH_TPP_HtFF = 0;
+CY_TPP_HtFF = 0;
+lambda_TPP_HtFF = k*sqrt(CT/2)*ones(100, 1);
+for m = 2:6
+    lambda_TPP_HtFF(1, m) = k*sqrt(CT/2);
+    for n=2:100
+        lambda_TPP_HtFF(n, m) = (CT/(2*sqrt((mu_HtFF(m)^2)+(lambda_TPP_HtFF(n-1, m))^2)))+ ((1/2)*(f/A)*(mu_HtFF(m)^3/CT));
+    end
+end
+lambda_TPP_HtFF = lambda_TPP_HtFF(100, :);
+lambda_HtFF = lambda_TPP_HtFF;
+for m = 1:6
+    CP_HtFF = ((k*CT^2)/(2*mu_HtFF(m))) + ((sigma*cd0/8)*(1+(4.6*mu_HtFF(m)^2)))...
+        +((1/2)*(f/A)*(mu_HtFF(m)^3)) + (lambda_climb_FF*CT);
+end
+YF_W_FF = CP_FF*R/CT/L_tr;
+plot_data = zeros(3, 6, 8);
+for k = 1:3
+    for m = 1:6
+        for p = 1:6
+            M_yF_HtFF = 1;
+            M_xF_HtFF = 1; 
+                beta_1c_HtFF = (-x_cg/h + M_yF_HtFF / (h * W)...
+                    + (CH_TPP_HtFF / CT)) / (1 + ((vb^2 - 1)...
+        / lock) / ((h * 2 * CT) / (R * sigma * a)));
+            
+            beta_1s_HtFF = (y_cg / h - M_xF_HtFF / (h * W)...
+                + (CY_TPP_HtFF / CT)) / (1 + ((vb^2 - 1)...
+        / lock) / (h * 2 * CT / (R * sigma * a)));
+        
+
+    alpha_shaft_HtFF = (x_cg / h - M_yF_HtFF / (h * W) + ((vb^2 - 1) / lock)...
+        *(CH_TPP_HtFF / CT) / (h * 2 * CT / (R * sigma * a))) / (1 + ((vb^2 - 1)...
+        / lock) / (h * 2 * CT / (omega * sigma * a)))...
+        + 0.5 * f_HtFF(k) * mu_HtFF(m)^2 / (A * CT);
+    phi_shaft_HtFF = (y_cg / h - M_xF_HtFF / (h * W) - ((vb^2 - 1) / lock)...
+        * (CH_TPP_HtFF / CT) / (h * 2 * CT / (sigma * R * a))) / (1 + (vb^2 - 1) * R * sigma * a / (lock * 2 * h * CT)) - YF_W_FF;
+    theta_knot_HtFF = ((6 * CT / (sigma * a)) * (1 + 3 * mu_HtFF(m)^2 / 2)...
+        + lambda_HtFF(m)* 1.5 * (1 - 0.5 * mu_HtFF(m)^2) + 3 * mu_HtFF(m) * beta_1s_HtFF * (vb^2 - 1) / lock) / (1 - mu_HtFF(m)^2 + 0.25 * 9 * (mu_HtFF(m)^4));
+    theta_1s_HtFF = - beta_1c_HtFF + (1 / (1 + 1.5 * mu_HtFF(m)^2)) * (8 * (vb^2 - 1)...
+        * beta_1s_HtFF / lock - (8 * mu_HtFF(m) / 3) * (theta_knot_HtFF - 3 * lambda_HtFF(m) * 0.25));
+    beta_knot_HtFF = (lock / (vb^2)) * (theta_knot_HtFF * (1 + mu_HtFF(m)^2) / 8 + mu_HtFF(m)* (beta_1c_HtFF + theta_1s_HtFF) / 6 - lambda_HtFF(m) / 6);
+    theta_1c_HtFF = beta_1s_HtFF + (1 / (1 + 1.5* mu_HtFF(m)^2))...
+        * ((4/3* mu_HtFF(m)* beta_knot_HtFF)...
+        + (8/lock) * (vb^2 - 1) * beta_1c_HtFF);
+
+    CH_TPP_HtFF = sigma*a*0.5*(1/2*mu_HtFF(m)* lambda_HtFF(m)*theta_knot_HtFF- ...
+        (beta_knot_HtFF*theta_1c_HtFF/6)...
+        +0.25*theta_1s_HtFF*lambda_HtFF(m)...
+        +0.25*mu_HtFF(m)*beta_knot_HtFF^2) ...
+        + sigma*cd0*mu_HtFF(m)/ 4;
+    CY_TPP_HtFF = - sigma * a * 0.5 * (3 * mu_HtFF(m)* beta_knot_HtFF * theta_knot_HtFF / 4 + 0.25 * theta_1c_HtFF * lambda_HtFF(m)...
+        + beta_knot_HtFF * theta_1s_HtFF * (1 + 3 * mu_HtFF(m)^2) / 6 - 3 * mu_HtFF(m)* beta_knot_HtFF * lambda_HtFF(m) / 2);
+        end
+        plot_data(k, m, 1) = beta_1c_HtFF;
+        plot_data(k, m, 2) = beta_1s_HtFF;
+        plot_data(k, m, 3) = theta_1c_HtFF;
+        plot_data(k, m, 4) = theta_1s_HtFF;
+        plot_data(k, m, 5) = alpha_shaft_HtFF;
+        plot_data(k, m, 6) = phi_shaft_HtFF;
+        plot_data(k, m, 7) = beta_knot_HtFF;
+        plot_data(k, m, 8) = theta_knot_HtFF;
+    end
+end
+titles = ["Beta 1c vs. mu", "Beta 1s vs. mu", "Theta 1s vs. mu", "Theta 1c vs. mu",...
+    "Alpha shaft vs. mu","Phi shaft vs. mu","Beta knot vs. mu","Theta knot vs. mu"];
+y_labels = ["Beta 1c", "Beta 1s", "Theta 1s", "Theta 1c","Alpha shaft","Phi shaft","Beta knot","Theta knot"];
+for n = 1:8
+    figure(n+2)
+    clf
+    plot(mu_HtFF, plot_data(:,:,n)*180/pi)
+    title((titles(n)))
+    ylabel(y_labels(n))
+    xlabel("mu")
+    legend("f= 7.5", "f= 1.5", "f= 22.5")
+end
+##### SOURCE END #####
+--></body></html>

@@ -129,7 +129,7 @@ psi_b = psi;
 psi_w = (0:del_psi_w:3*360)*(pi/180);
 epsilon_wake = 1;
 %% Wake functions
-while epsilon_wake > 0.004
+while epsilon_wake > 0.4
     T_old_store = T_MS_bar;
     [constant_circulation,constant_circulation_bar] = ...
         find_constant_circulation(rho, omega, R, Nb, T_MS_bar, v_tip, A);
@@ -147,6 +147,7 @@ while epsilon_wake > 0.004
     disp("display checkpoint2")
     lambda_MS_total = lambda_wake(:,:,3);
     for P_B = 1:length(psi_b)
+        T_old_store = T_MS_bar;
         [u_t, u_p_linear, u_p_MS, T_linear_bar, Q_linear_bar, T_MS_bar,...
             Q_MS_bar, P_linear_bar, P_MS_bar, dL_MS, alpha_linear,alpha_MS,...
             dFx_MS, dFz_MS] = find_bemt(r, psi(P_B), mu(174), beta_MS_it(P_B,174), ...
@@ -182,3 +183,5 @@ disp("Power Wake ="), disp(P_MS_bar_linear_it);
 figure(13)
 [r_grid_2, psi_b_grid] = meshgrid(r,psi_b);
 surf(r_grid_2.*cos(psi_b_grid), r_grid_2.*sin(psi_b_grid), abs(lambda_MS_total'));
+title("Inflow over blade azimuth with constant Circulation"); 
+xlabel("x"); ylabel("y"); zlabel("lambda")
