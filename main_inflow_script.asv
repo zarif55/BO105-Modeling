@@ -2,8 +2,8 @@ clc
 close
 clear
 %% UH 60
-%Constants
-% Airfoil SC1095 & SC1094R8
+%Constants BO-105
+% Airfoil NACA 23012
 [Nb, N_psi, R_i, a, omega_i,A_i,A_blade_i,cd0,f_i,T_i,c_i,rho,k,...
     L_tr,x_cg,y_cg,h,vb, lock, theta_tw] = find_constants;
 [R,A,A_blade,f,v_inf_mph,v_inf,c,sigma,omega,v_tip,alpha_d,alpha,...
@@ -103,19 +103,19 @@ title("Non uniform Inflow")
 zlabel("Non uniform Inflow lambda")
 legend("Mangler & Squire Total Inflow")
 figure(3)
-plot(psi, dFx_MS)
+plot(psi, real(dFx_MS))
 title("Force in x vs azimuth at all r locations")
 xlabel("psi"); ylabel("dFx_MS")
 figure(4)
-plot(psi, dFz_MS)
+plot(psi, real(dFz_MS))
 title("Force in z vs azimuth at all r locations")
 xlabel("psi"); ylabel("dFz_MS")
 figure(5)
-plot(r, dFx_MS')
+plot(r, real(dFx_MS'))
 title("Force in x vs radial location at all azimuth locations")
 xlabel("r"); ylabel("dFx_MS")
 figure(6)
-plot(r, dFz_MS')
+plot(r, real(dFz_MS'))
 title("Force in z vs radial location at all azimuth locations")
 xlabel("r"); ylabel("dFz_MS")
 figure(7)
@@ -209,22 +209,29 @@ v = v_inf;
 [Cl_5, L_5, phi_wp_jones_5] = find_beddoes_mdpt(A, v(174), rho, alpha_unsteady2, theta_5);
 t_md = 1:length(Cl);
 
-
 %% Plot P3
 for Plots = Nb
 figure(14) 
 plot(theta(:,174))
 title("Collective with Hamonics(5)");
 xlabel("psi"); ylabel("theta"); 
+
 figure(15)
 hold on
 plot(psi, theta_all(1, :))
+plot(psi, theta_all(2, :))
+plot(psi, theta_all(3, :))
+plot(psi, theta_all(4, :))
+plot(psi, theta_all(5, :))
+hold off
+
 figure(16)
 hold on
 title("Lift vs time");
 xlabel("s"); ylabel("C_L"); 
 plot(t_md, Cl)
 plot(t_md, Cl(100)*ones(1, 100))
+hold off
 figure(17)
 hold on
 title("Lift vs time");
@@ -232,9 +239,40 @@ xlabel("s"); ylabel("C_L");
 legend()
 plot(t_md, Cl)
 plot(t_md, Cl_5-1)
+hold off
 figure(18)
 hold on
 title("W.P. Jones Phi Indicial Response");
 xlabel("s"); ylabel("Indical Response"); 
 plot(t_md, phi_wp_jones)
+hold off
+end
+
+%% Assignment 4 %%
+%% Acoustics
+%% constants
+c0 = 343;
+%% functions
+[rotor, NACA23012, r_real, X, Y, Z] = find_rotor_23012(R, r);
+[P_prime, P_prime_inter, t_real, P_prime_old]=...
+    find_acoustics(R, r, rotor, c0, rho, u_t, L_5, dr);
+
+%% Plots P4 
+figure(19)
+hold on
+title("NACA 23012")
+plot(NACA23012(:, 1), NACA23012(:, 2))
+plot(1, 1)
+xlabel("x/c"); ylabel("y/c");
+ylim([-0.4, 0.2])
+xlim([0, 1])
+figure(20)
+plot3(R*r_real, c*NACA23012(:, 1), c*NACA23012(:, 2))
+title("Rotor")
+xlabel("x"); ylabel("y"); zlabel("z")
+ylim([0, 0.8]); xlim([-0, 8]); zlim([-0.4, 0.2])
+for Plots = Nb
+figure(21)
+title("Acoustic Pressure")
+plot(t_real, sind(linspace(1, 361, 51)).*P_prime_inter+790)
 end

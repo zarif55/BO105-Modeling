@@ -1,3 +1,4 @@
+%% find_beddoes_mdpt
 function [Cl, L, phi_wp_jones] = find_beddoes_mdpt(A, v, rho, alpha, theta)
 % approximate solutions from W.P. Jones
 %% constants

@@ -2,8 +2,8 @@ clc
 close
 clear
 %% UH 60
-%Constants
-% Airfoil SC1095 & SC1094R8
+%Constants BO-105
+% Airfoil NACA 23012
 [Nb, N_psi, R_i, a, omega_i,A_i,A_blade_i,cd0,f_i,T_i,c_i,rho,k,...
     L_tr,x_cg,y_cg,h,vb, lock, theta_tw] = find_constants;
 [R,A,A_blade,f,v_inf_mph,v_inf,c,sigma,omega,v_tip,alpha_d,alpha,...
@@ -209,7 +209,6 @@ v = v_inf;
 [Cl_5, L_5, phi_wp_jones_5] = find_beddoes_mdpt(A, v(174), rho, alpha_unsteady2, theta_5);
 t_md = 1:length(Cl);
 
-
 %% Plot P3
 for Plots = Nb
 figure(14) 
@@ -247,4 +246,35 @@ title("W.P. Jones Phi Indicial Response");
 xlabel("s"); ylabel("Indical Response"); 
 plot(t_md, phi_wp_jones)
 hold off
+end
+
+%% Assignment 4 %%
+%% Acoustics
+%% constants
+c0 = 343;
+%% functions
+[rotor, NACA23012, r_real, X, Y, Z] = find_rotor_23012(R, r);
+[P_prime, P_prime_inter, t_real, P_prime_old]=...
+    find_acoustics(R, r, rotor, c0, rho, u_t, L_5, dr);
+
+%% Plots P4
+for Plots = Nb
+figure(19)
+hold on
+title("NACA 23012")
+plot(NACA23012(:, 1), NACA23012(:, 2))
+plot(1, 1)
+xlabel("x/c"); ylabel("y/c");
+ylim([-0.4, 0.2])
+xlim([0, 1])
+hold off
+figure(20)
+plot3(R*r_real, c*NACA23012(:, 1), c*NACA23012(:, 2))
+title("Rotor")
+xlabel("x"); ylabel("y"); zlabel("z")
+ylim([0, 0.8]); xlim([-0, 8]); zlim([-0.4, 0.2])
+figure(21)
+plot(t_real, P_prime_inter)
+title("Acoustic Pressure over 5 seconds");
+xlabel("time"); ylabel("Acoustic Pressure P'");
 end
